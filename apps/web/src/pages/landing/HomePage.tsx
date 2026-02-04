@@ -18,7 +18,12 @@ import {
   ShoppingCart,
   UserCheck,
   Bell,
-  Package
+  Package,
+  BookOpen,
+  Settings,
+  Printer,
+  HelpCircle,
+  CheckCircle2
 } from 'lucide-react';
 
 const features = [
@@ -190,6 +195,7 @@ export default function HomePage() {
           <nav className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Fitur</a>
             <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Cara Kerja</a>
+            <a href="#guide" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Panduan</a>
             <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-primary transition-colors">Harga</a>
           </nav>
           <div className="flex items-center gap-3">
@@ -461,6 +467,362 @@ export default function HomePage() {
                 <div className="flex items-center gap-3 bg-teal-50 rounded-lg px-4 py-3">
                   <Package className="h-5 w-5 text-teal-600" />
                   <span className="text-sm font-medium">Siap Disajikan</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Panduan Penggunaan */}
+      <section id="guide" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <BookOpen className="h-4 w-4" />
+              Panduan Lengkap
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Panduan Penggunaan ORIXA</h2>
+            <p className="text-gray-600 max-w-3xl mx-auto">
+              Berikut adalah panduan lengkap untuk memulai menggunakan platform ORIXA. 
+              Ikuti langkah-langkah di bawah ini untuk mengoptimalkan operasional bisnis Anda.
+            </p>
+          </div>
+
+          {/* Step by Step Guide */}
+          <div className="max-w-4xl mx-auto space-y-8">
+            
+            {/* Step 1: Registrasi */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  1
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Registrasi Akun Perusahaan</h3>
+                  <p className="text-gray-600 mb-4">
+                    Langkah pertama adalah mendaftarkan perusahaan Anda di platform ORIXA. 
+                    Proses registrasi sangat mudah dan hanya memerlukan beberapa informasi dasar.
+                  </p>
+                  <div className="bg-white rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Klik tombol "Daftar Gratis" di halaman utama</p>
+                        <p className="text-sm text-gray-500">Anda akan diarahkan ke formulir pendaftaran</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Isi nama perusahaan, nama admin, email, dan password</p>
+                        <p className="text-sm text-gray-500">Password minimal 8 karakter dengan kombinasi huruf besar, kecil, dan angka</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Verifikasi email Anda</p>
+                        <p className="text-sm text-gray-500">Cek inbox email untuk link aktivasi akun</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2: Setup Outlet */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  2
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Konfigurasi Outlet</h3>
+                  <p className="text-gray-600 mb-4">
+                    Setelah berhasil login, Anda perlu mengatur outlet bisnis Anda. 
+                    Setiap outlet dapat memiliki pengaturan yang berbeda sesuai kebutuhan.
+                  </p>
+                  <div className="bg-white rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Settings className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Buka menu "Kelola Outlet" di dashboard admin</p>
+                        <p className="text-sm text-gray-500">Anda dapat menambah, mengubah, atau menonaktifkan outlet</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Settings className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Atur informasi outlet: nama, alamat, dan nomor telepon</p>
+                        <p className="text-sm text-gray-500">Informasi ini akan ditampilkan pada struk dan halaman pelanggan</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Settings className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Konfigurasi pajak, service charge, dan metode pembayaran</p>
+                        <p className="text-sm text-gray-500">Tersedia opsi Cash, Transfer Bank, dan QRIS</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3: Setup Menu */}
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-100">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  3
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Kelola Menu Produk</h3>
+                  <p className="text-gray-600 mb-4">
+                    Tambahkan kategori dan menu produk yang akan dijual. 
+                    Anda dapat mengatur harga, varian, addon, dan stok untuk setiap menu.
+                  </p>
+                  <div className="bg-white rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <ClipboardList className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Buat kategori menu terlebih dahulu</p>
+                        <p className="text-sm text-gray-500">Contoh: Makanan Berat, Minuman, Snack, Dessert</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <ClipboardList className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Tambahkan menu dengan foto, deskripsi, dan harga</p>
+                        <p className="text-sm text-gray-500">Foto produk akan ditampilkan di QR Menu untuk pelanggan</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <ClipboardList className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Atur varian (ukuran/level) dan addon jika diperlukan</p>
+                        <p className="text-sm text-gray-500">Contoh varian: Regular/Large, Level pedas: 1/2/3</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <ClipboardList className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Kelola stok menu (opsional)</p>
+                        <p className="text-sm text-gray-500">Menu akan otomatis ditandai "Habis" jika stok mencapai 0</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4: Setup Meja & QR */}
+            <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-8 border border-orange-100">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  4
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Buat Meja dan QR Code</h3>
+                  <p className="text-gray-600 mb-4">
+                    Untuk bisnis F&B dengan sistem dine-in, Anda perlu membuat meja dan mencetak QR Code 
+                    agar pelanggan dapat melakukan pemesanan mandiri.
+                  </p>
+                  <div className="bg-white rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <QrCode className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Buka menu "Kelola Meja" di dashboard</p>
+                        <p className="text-sm text-gray-500">Tambahkan meja sesuai jumlah yang tersedia di outlet</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <QrCode className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Setiap meja akan memiliki QR Code unik</p>
+                        <p className="text-sm text-gray-500">QR Code berisi link ke menu digital outlet Anda</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Printer className="h-5 w-5 text-orange-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Cetak dan tempel QR Code di setiap meja</p>
+                        <p className="text-sm text-gray-500">Pelanggan cukup scan QR untuk melihat menu dan memesan</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 5: Tambah Staff */}
+            <div className="bg-gradient-to-r from-cyan-50 to-sky-50 rounded-2xl p-8 border border-cyan-100">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-cyan-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  5
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Tambahkan Staff/Kasir</h3>
+                  <p className="text-gray-600 mb-4">
+                    Daftarkan akun untuk kasir dan staff lainnya. Setiap role memiliki akses yang berbeda 
+                    sesuai dengan tanggung jawabnya.
+                  </p>
+                  <div className="bg-white rounded-xl p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Users className="h-5 w-5 text-cyan-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Buka menu "Kelola User" di dashboard admin</p>
+                        <p className="text-sm text-gray-500">Anda dapat menambah, mengubah, atau menonaktifkan akun staff</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Users className="h-5 w-5 text-cyan-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Pilih role "Kasir" untuk staff yang mengoperasikan POS</p>
+                        <p className="text-sm text-gray-500">Kasir dapat membuat pesanan, konfirmasi pembayaran, dan cetak struk</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Users className="h-5 w-5 text-cyan-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-gray-900">Tentukan outlet mana yang dapat diakses oleh staff</p>
+                        <p className="text-sm text-gray-500">Satu kasir dapat ditugaskan ke satu atau beberapa outlet</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 6: Operasional */}
+            <div className="bg-gradient-to-r from-rose-50 to-red-50 rounded-2xl p-8 border border-rose-100">
+              <div className="flex items-start gap-6">
+                <div className="w-12 h-12 bg-rose-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  6
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Mulai Operasional Harian</h3>
+                  <p className="text-gray-600 mb-4">
+                    Setelah semua konfigurasi selesai, bisnis Anda siap beroperasi. 
+                    Berikut adalah alur operasional harian menggunakan ORIXA.
+                  </p>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {/* POS */}
+                    <div className="bg-white rounded-xl p-4 border border-gray-100">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Monitor className="h-5 w-5 text-blue-600" />
+                        <h4 className="font-semibold text-gray-900">POS Kasir</h4>
+                      </div>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500">•</span>
+                          Buka menu POS untuk input pesanan manual
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500">•</span>
+                          Cek tab "Pesanan QR" untuk order dari pelanggan
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500">•</span>
+                          Konfirmasi pembayaran (Cash/Transfer/QRIS)
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-500">•</span>
+                          Cetak struk untuk pelanggan
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    {/* KDS */}
+                    <div className="bg-white rounded-xl p-4 border border-gray-100">
+                      <div className="flex items-center gap-2 mb-3">
+                        <ChefHat className="h-5 w-5 text-orange-600" />
+                        <h4 className="font-semibold text-gray-900">Kitchen Display</h4>
+                      </div>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li className="flex items-start gap-2">
+                          <span className="text-orange-500">•</span>
+                          Buka halaman KDS di layar dapur
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-orange-500">•</span>
+                          Pesanan baru akan muncul otomatis
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-orange-500">•</span>
+                          Klik "Proses" saat mulai memasak
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-orange-500">•</span>
+                          Klik "Siap" saat pesanan selesai
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* FAQ Section */}
+          <div className="max-w-4xl mx-auto mt-16">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-2">Pertanyaan Umum</h3>
+              <p className="text-gray-600">Beberapa pertanyaan yang sering diajukan</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <HelpCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Apakah pelanggan harus login untuk memesan?</h4>
+                    <p className="text-sm text-gray-600">
+                      Tidak. Pelanggan dapat langsung memesan tanpa login (guest checkout). 
+                      Login hanya diperlukan jika ingin menyimpan riwayat pesanan.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <HelpCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Bagaimana cara konfirmasi pembayaran transfer?</h4>
+                    <p className="text-sm text-gray-600">
+                      Kasir dapat membuka tab "Pesanan QR" di POS, lalu klik "Konfirmasi Bayar" 
+                      setelah memverifikasi pembayaran dari pelanggan.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <HelpCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Apakah bisa digunakan tanpa QR (POS saja)?</h4>
+                    <p className="text-sm text-gray-600">
+                      Ya. Anda dapat mengatur mode outlet ke "POS Only" di pengaturan outlet. 
+                      Semua pesanan akan diinput manual oleh kasir.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <HelpCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Bagaimana cara melihat laporan penjualan?</h4>
+                    <p className="text-sm text-gray-600">
+                      Buka menu "Laporan" di dashboard admin. Anda dapat melihat laporan harian, 
+                      mingguan, bulanan, serta perbandingan pendapatan dan pengeluaran.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
