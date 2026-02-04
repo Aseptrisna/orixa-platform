@@ -16,6 +16,23 @@ module.exports = {
       merge_logs: true,
       time: true,
       max_memory_restart: '500M'
+    },
+    {
+      name: 'orixa-web',
+      cwd: './apps/web',
+      script: 'node_modules/.bin/serve',
+      args: '-s dist -l 8022',
+      instances: 1,
+      exec_mode: 'fork',
+      watch: false,
+      env: {
+        NODE_ENV: 'production'
+      },
+      error_file: './logs/web-error.log',
+      out_file: './logs/web-out.log',
+      merge_logs: true,
+      time: true,
+      max_memory_restart: '300M'
     }
   ]
 };
