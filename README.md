@@ -418,13 +418,17 @@ JsonWebTokenError: invalid signature
 
 ## 🚀 Production Deployment
 
-### Option 1: Deploy di Ubuntu Server (VPS/Dedicated)
+### Quick Deploy (Recommended)
+
+Deploy ORIXA dengan PM2 + Nginx di Ubuntu Server.
 
 #### Prerequisites
 - Ubuntu 20.04/22.04 LTS
-- Minimal 2GB RAM, 2 CPU Core
-- Domain name (contoh: orixa.yourdomain.com)
-- SSL Certificate (Let's Encrypt - gratis)
+- Node.js 18+
+- pnpm
+- PM2
+- Nginx
+- Domain dengan SSL (Let's Encrypt)
 
 #### Step 1: Setup Server
 
@@ -432,481 +436,198 @@ JsonWebTokenError: invalid signature
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js 18 (via NodeSource)
+# Install Node.js 18
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# Install pnpm
-npm install -g pnpm
+# Install pnpm & PM2
+npm install -g pnpm pm2
 
-# Install PM2 (Process Manager untuk production)
-npm install -g pm2
-
-# Install Nginx (Reverse Proxy)
-sudo apt install -y nginx
-
-# Install Certbot untuk SSL
-sudo apt install -y certbot python3-certbot-nginx
+# Install Nginx & Certbot
+sudo apt install -y nginx certbot python3-certbot-nginx
 ```
 
-#### Step 2: Install MongoDB
-
-**Option A: MongoDB Local di Server**
-```bash
-# Import MongoDB public GPG key
-curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
-   sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
-
-# Add MongoDB repository
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | \
-   sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-
-# Install MongoDB
-sudo apt update
-sudo apt install -y mongodb-org
-
-# Start & enable MongoDB
-sudo systemctl start mongod
-sudo systemctl enable mongod
-
-# Verify
-sudo systemctl status mongod
-```
-
-**Option B: MongoDB Atlas (Recommended untuk production)**
-1. Buat cluster di https://cloud.mongodb.com
-2. Setup Network Access (whitelist server IP)
-3. Create database user
-4. Copy connection string
-
-#### Step 3: Clone & Setup Project
+#### Step 2: Clone & Build
 
 ```bash
-# Create app directory
+# Create directory
 sudo mkdir -p /var/www/orixa
 sudo chown $USER:$USER /var/www/orixa
 
-# Clone repository
+# Clone dari branch deploy
 cd /var/www/orixa
-git clone https://github.com/Aseptrisna/orixa-platform.git .
+git clone -b deploy https://github.com/Aseptrisna/orixa-platform.git .
 
 # Install dependencies
 pnpm install
 
-# Build shared package
+# Build
 pnpm build:shared
-```
-
-#### Step 4: Configure Environment
-
-```bash
-# Backend environment
-cp apps/api/.env.example apps/api/.env
-nano apps/api/.env
-```
-
-**Production `.env` untuk Backend:**
-```env
-PORT=3000
-NODE_ENV=production
-MONGODB_URI=mongodb://localhost:27017/orixa
-# Atau gunakan MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://user:password@cluster.xxxxx.mongodb.net/orixa
-
-JWT_SECRET=your-super-secret-jwt-key-min-32-chars-change-this
-JWT_REFRESH_SECRET=your-super-secret-refresh-key-min-32-chars-change-this
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-
-CORS_ORIGIN=https://orixa.yourdomain.com
-```
-
-```bash
-# Frontend environment
-cp apps/web/.env.example apps/web/.env
-nano apps/web/.env
-```
-
-**Production `.env` untuk Frontend:**
-```env
-VITE_API_URL=https://api.orixa.yourdomain.com
-```
-
-#### Step 5: Build Production
-
-```bash
-# Build semua
 pnpm build
 ```
 
-#### Step 6: Setup PM2 (Process Manager)
+#### Step 3: Configure Environment
+
+**Backend (`apps/api/.env`):**
+```env
+# MongoDB
+MONGODB_URI=mongodb://user:password@host:27017/dbname
+
+# JWT
+JWT_ACCESS_SECRET=your-secret-key-min-32-chars
+JWT_REFRESH_SECRET=your-refresh-secret-min-32-chars
+JWT_ACCESS_EXPIRY=15m
+JWT_REFRESH_EXPIRY=7d
+
+# App
+PORT=8023
+NODE_ENV=production
+
+# CORS
+CORS_ORIGIN=https://yourdomain.com
+
+# Mail (optional)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+FRONTEND_URL=https://yourdomain.com
+```
+
+**Frontend (`apps/web/.env`):**
+```env
+VITE_API_URL=https://api.yourdomain.com
+```
+
+#### Step 4: Seed Database (Optional)
 
 ```bash
-# Create PM2 ecosystem file
-nano ecosystem.config.js
-```
-
-**ecosystem.config.js:**
-```javascript
-module.exports = {
-  apps: [
-    {
-      name: 'orixa-api',
-      cwd: '/var/www/orixa/apps/api',
-      script: 'dist/main.js',
-      instances: 'max',
-      exec_mode: 'cluster',
-      env: {
-        NODE_ENV: 'production',
-        PORT: 3000
-      },
-      error_file: '/var/log/pm2/orixa-api-error.log',
-      out_file: '/var/log/pm2/orixa-api-out.log',
-      merge_logs: true,
-      time: true
-    }
-  ]
-};
-```
-
-```bash
-# Create log directory
-sudo mkdir -p /var/log/pm2
-sudo chown $USER:$USER /var/log/pm2
-
-# Start API dengan PM2
-pm2 start ecosystem.config.js
-
-# Save PM2 process list
-pm2 save
-
-# Setup PM2 startup (auto-start on reboot)
-pm2 startup
-# Jalankan command yang ditampilkan
-```
-
-#### Step 7: Setup Nginx Reverse Proxy
-
-```bash
-# Create Nginx config untuk API
-sudo nano /etc/nginx/sites-available/orixa-api
-```
-
-**Nginx config untuk API:**
-```nginx
-server {
-    listen 80;
-    server_name api.orixa.yourdomain.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-        
-        # WebSocket support untuk Socket.IO
-        proxy_read_timeout 86400;
-    }
-}
-```
-
-```bash
-# Create Nginx config untuk Frontend
-sudo nano /etc/nginx/sites-available/orixa-web
-```
-
-**Nginx config untuk Frontend:**
-```nginx
-server {
-    listen 80;
-    server_name orixa.yourdomain.com;
-    root /var/www/orixa/apps/web/dist;
-    index index.html;
-
-    # Gzip compression
-    gzip on;
-    gzip_vary on;
-    gzip_min_length 1024;
-    gzip_proxied expired no-cache no-store private auth;
-    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml application/javascript;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Cache static assets
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
-        expires 30d;
-        add_header Cache-Control "public, immutable";
-    }
-}
-```
-
-```bash
-# Enable sites
-sudo ln -s /etc/nginx/sites-available/orixa-api /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/orixa-web /etc/nginx/sites-enabled/
-
-# Test Nginx config
-sudo nginx -t
-
-# Restart Nginx
-sudo systemctl restart nginx
-```
-
-#### Step 8: Setup SSL dengan Let's Encrypt
-
-```bash
-# Generate SSL certificate
-sudo certbot --nginx -d orixa.yourdomain.com -d api.orixa.yourdomain.com
-
-# Auto-renewal sudah otomatis disetup oleh certbot
-# Test renewal:
-sudo certbot renew --dry-run
-```
-
-#### Step 9: Seed Database (Optional)
-
-```bash
-cd /var/www/orixa
 pnpm seed
 ```
 
-#### Step 10: Setup Firewall
+#### Step 5: Start dengan PM2
 
 ```bash
-# Allow SSH, HTTP, HTTPS
+# Start API & Web
+pm2 start ecosystem.config.js
+
+# Verify
+pm2 status
+
+# Should show:
+# ┌─────────────┬────┬─────────┬──────┐
+# │ name        │ id │ status  │ cpu  │
+# ├─────────────┼────┼─────────┼──────┤
+# │ orixa-api   │ 0  │ online  │ 0%   │
+# │ orixa-web   │ 1  │ online  │ 0%   │
+# └─────────────┴────┴─────────┴──────┘
+
+# Save & auto-start on reboot
+pm2 save
+pm2 startup
+```
+
+#### Step 6: Setup Nginx
+
+```bash
+# Copy config files
+sudo cp nginx/orixa-api.conf /etc/nginx/sites-available/
+sudo cp nginx/orixa-web.conf /etc/nginx/sites-available/
+
+# Edit domain names in config files
+sudo nano /etc/nginx/sites-available/orixa-api.conf
+sudo nano /etc/nginx/sites-available/orixa-web.conf
+
+# Enable sites
+sudo ln -s /etc/nginx/sites-available/orixa-api.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/orixa-web.conf /etc/nginx/sites-enabled/
+
+# Test & restart
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+#### Step 7: Setup SSL (Let's Encrypt)
+
+```bash
+# Generate SSL certificates
+sudo certbot --nginx -d yourdomain.com -d api.yourdomain.com
+
+# Auto-renewal test
+sudo certbot renew --dry-run
+```
+
+#### Step 8: Firewall
+
+```bash
 sudo ufw allow OpenSSH
 sudo ufw allow 'Nginx Full'
 sudo ufw enable
-sudo ufw status
 ```
 
 ---
 
-### Option 2: Deploy dengan Docker (Recommended untuk Scale)
+### Port Configuration
 
-#### docker-compose.yml
+| Service | Port | Description |
+|---------|------|-------------|
+| orixa-api | 8023 | NestJS Backend API |
+| orixa-web | 8022 | Frontend (serve) |
 
-```yaml
-version: '3.8'
-
-services:
-  mongodb:
-    image: mongo:7
-    container_name: orixa-mongodb
-    restart: always
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    networks:
-      - orixa-network
-
-  api:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
-    container_name: orixa-api
-    restart: always
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - MONGODB_URI=mongodb://admin:${MONGO_PASSWORD}@mongodb:27017/orixa?authSource=admin
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
-      - CORS_ORIGIN=${CORS_ORIGIN}
-    depends_on:
-      - mongodb
-    networks:
-      - orixa-network
-
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    container_name: orixa-web
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/ssl
-    depends_on:
-      - api
-    networks:
-      - orixa-network
-
-volumes:
-  mongodb_data:
-
-networks:
-  orixa-network:
-    driver: bridge
-```
-
-#### Dockerfile untuk API (apps/api/Dockerfile)
-
-```dockerfile
-FROM node:18-alpine AS builder
-
-WORKDIR /app
-
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy workspace files
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
-COPY packages/shared ./packages/shared
-COPY apps/api ./apps/api
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Build
-RUN pnpm build:shared
-RUN cd apps/api && pnpm build
-
-# Production image
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/apps/api/node_modules ./node_modules
-COPY --from=builder /app/apps/api/package.json ./
-
-EXPOSE 3000
-
-CMD ["node", "dist/main.js"]
-```
-
-#### Dockerfile untuk Web (apps/web/Dockerfile)
-
-```dockerfile
-FROM node:18-alpine AS builder
-
-WORKDIR /app
-
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy workspace files
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
-COPY packages/shared ./packages/shared
-COPY apps/web ./apps/web
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Build
-RUN pnpm build:shared
-RUN cd apps/web && pnpm build
-
-# Production image dengan Nginx
-FROM nginx:alpine
-
-COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
-
-EXPOSE 80 443
-
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-#### Deploy dengan Docker
+### PM2 Commands
 
 ```bash
-# Create .env file
-cp .env.example .env
-nano .env
+# Status
+pm2 status
 
-# Build & start
-docker-compose up -d --build
+# Logs
+pm2 logs orixa-api
+pm2 logs orixa-web
 
-# View logs
-docker-compose logs -f
+# Restart
+pm2 restart orixa-api
+pm2 restart orixa-web
+pm2 restart all
 
 # Stop
-docker-compose down
+pm2 stop all
+
+# Monitor
+pm2 monit
 ```
 
----
+### Update Deployment
 
-### Option 3: Deploy ke Cloud Platform
+```bash
+cd /var/www/orixa
+git pull origin deploy
+pnpm install
+pnpm build:shared
+pnpm build
+pm2 restart all
+```
 
-#### A. Railway (Simple & Fast)
-1. Connect GitHub repo ke Railway
-2. Add MongoDB plugin
-3. Set environment variables
-4. Deploy otomatis
+### Nginx Config Files
 
-#### B. Render
-1. Create Web Service untuk API
-2. Create Static Site untuk Frontend
-3. Add MongoDB (atau gunakan Atlas)
-4. Configure environment variables
+Config files tersedia di folder `nginx/`:
+- `nginx/orixa-api.conf` - Reverse proxy untuk API (port 8023)
+- `nginx/orixa-web.conf` - Reverse proxy untuk Web (port 8022)
 
-#### C. DigitalOcean App Platform
-1. Create App dari GitHub
-2. Configure API sebagai Web Service
-3. Configure Web sebagai Static Site
-4. Add managed MongoDB atau gunakan Atlas
-
-#### D. AWS (Enterprise Scale)
-- EC2 atau ECS untuk containers
-- DocumentDB atau MongoDB Atlas untuk database
-- CloudFront untuk CDN
-- Route 53 untuk DNS
-- ACM untuk SSL certificates
-- Application Load Balancer
+Edit `server_name` dan SSL paths sesuai domain Anda.
 
 ---
 
 ### Production Checklist ✅
 
 ```
-[ ] Environment variables configured (tidak hardcode secrets)
-[ ] MongoDB secured (authentication enabled, network restricted)
+[ ] MongoDB configured & accessible
+[ ] Environment variables set (tidak hardcode)
 [ ] SSL/HTTPS enabled
-[ ] Firewall configured (hanya port yang diperlukan)
-[ ] PM2 atau Docker untuk process management
-[ ] Nginx reverse proxy configured
-[ ] Logging & monitoring setup
+[ ] Firewall configured
+[ ] PM2 running (api & web)
+[ ] Nginx configured
+[ ] Auto-start on reboot (pm2 startup)
 [ ] Backup strategy untuk MongoDB
-[ ] Rate limiting enabled
-[ ] CORS properly configured
-[ ] Error tracking (Sentry optional)
-```
-
-### Monitoring & Maintenance
-
-```bash
-# PM2 monitoring
-pm2 monit
-pm2 logs orixa-api
-
-# Check API health
-curl https://api.orixa.yourdomain.com/health
-
-# MongoDB backup
-mongodump --uri="mongodb://localhost:27017/orixa" --out=/backup/$(date +%Y%m%d)
-
-# Update aplikasi
-cd /var/www/orixa
-git pull
-pnpm install
-pnpm build
-pm2 restart orixa-api
 ```
 
 ---
