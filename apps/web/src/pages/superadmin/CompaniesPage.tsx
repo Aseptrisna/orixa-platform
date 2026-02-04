@@ -14,10 +14,12 @@ export default function CompaniesPage() {
   const [editingPlan, setEditingPlan] = useState<{ id: string; plan: string } | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: companies, isLoading } = useQuery({
+  const { data: companiesRes, isLoading } = useQuery({
     queryKey: ['sa-companies'],
     queryFn: () => superAdminApi.getCompanies(),
   });
+
+  const companies = companiesRes?.data;
 
   const updatePlanMutation = useMutation({
     mutationFn: ({ id, plan }: { id: string; plan: string }) =>
@@ -34,7 +36,7 @@ export default function CompaniesPage() {
 
   const filteredCompanies = companies?.data?.filter((company: ICompany) =>
     company.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) || [];
 
   const getPlanBadge = (plan: string) => {
     const colors: Record<string, string> = {
@@ -69,7 +71,7 @@ export default function CompaniesPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-sm text-gray-600">Total Companies</p>
-            <p className="text-2xl font-bold">{companies?.data?.length || 0}</p>
+            <p className="text-2xl font-bold">{companies?.total || 0}</p>
           </CardContent>
         </Card>
         <Card>

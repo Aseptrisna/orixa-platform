@@ -23,16 +23,18 @@ interface AuditLog {
 export default function AuditPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: logs, isLoading } = useQuery({
+  const { data: logsRes, isLoading } = useQuery({
     queryKey: ['sa-audit'],
     queryFn: () => superAdminApi.getAuditLogs(),
   });
+
+  const logs = logsRes?.data;
 
   const filteredLogs = logs?.data?.filter((log: AuditLog) =>
     log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
     log.entityType.toLowerCase().includes(searchQuery.toLowerCase()) ||
     log.actorUser?.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) || [];
 
   const getActionBadge = (action: string) => {
     if (action.includes('CREATE')) return 'bg-green-100 text-green-700';
