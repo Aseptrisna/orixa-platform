@@ -418,7 +418,69 @@ JsonWebTokenError: invalid signature
 
 ## 🚀 Production Deployment
 
-### Quick Deploy (Recommended)
+### 🐳 Docker Deploy (Recommended)
+
+Deploy dengan Docker - tidak perlu install Node.js di server!
+
+#### Prerequisites
+- Ubuntu 20.04/22.04 LTS
+- Docker Engine 24+
+- Docker Compose v2+
+
+#### Quick Start
+
+```bash
+# 1. Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+
+# 2. Clone repository
+sudo mkdir -p /var/www/orixa && sudo chown $USER:$USER /var/www/orixa
+cd /var/www/orixa
+git clone -b deploy https://github.com/Aseptrisna/orixa-platform.git .
+
+# 3. Configure environment
+cp .env.docker.example .env
+nano .env  # Edit dengan credentials Anda
+
+# 4. Build & Run
+docker compose build
+docker compose up -d
+
+# 5. Check status
+docker compose ps
+```
+
+#### Environment Variables (`.env`)
+
+```env
+# MongoDB
+MONGO_ROOT_USERNAME=orixa
+MONGO_ROOT_PASSWORD=YourSecurePassword123!
+
+# JWT (minimum 32 characters)
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-chars
+JWT_REFRESH_SECRET=your-refresh-secret-key-minimum-32-chars
+
+# Your domain
+CORS_ORIGIN=https://yourdomain.com
+VITE_API_URL=https://api.yourdomain.com
+```
+
+#### Docker Commands
+
+```bash
+docker compose up -d          # Start all services
+docker compose down           # Stop all services
+docker compose logs -f        # View logs
+docker compose restart api    # Restart specific service
+```
+
+📚 **Full Docker Guide**: See [DOCKER.md](DOCKER.md) for SSL setup, Nginx config, troubleshooting, and more.
+
+---
+
+### PM2 Deploy (Alternative)
 
 Deploy ORIXA dengan PM2 + Nginx di Ubuntu Server.
 

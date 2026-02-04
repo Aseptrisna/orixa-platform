@@ -1,0 +1,50 @@
+# =============================================
+# ORIXA - Docker Compose (Development)
+# Hot reload enabled for development
+# =============================================
+
+services:
+  # ================
+  # MongoDB Database
+  # ================
+  mongodb:
+    image: mongo:7
+    container_name: orixa-mongodb-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: orixa
+      MONGO_INITDB_ROOT_PASSWORD: orixa_dev
+      MONGO_INITDB_DATABASE: orixa
+    volumes:
+      - mongodb_data_dev:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - orixa-network-dev
+
+  # ================
+  # Mongo Express (DB Admin UI)
+  # ================
+  mongo-express:
+    image: mongo-express:latest
+    container_name: orixa-mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: orixa
+      ME_CONFIG_MONGODB_ADMINPASSWORD: orixa_dev
+      ME_CONFIG_MONGODB_URL: mongodb://orixa:orixa_dev@mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - orixa-network-dev
+
+volumes:
+  mongodb_data_dev:
+    driver: local
+
+networks:
+  orixa-network-dev:
+    driver: bridge

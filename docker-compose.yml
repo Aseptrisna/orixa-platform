@@ -1,0 +1,97 @@
+# =============================================
+# ORIXA - Docker Compose
+# Multi-Tenant POS Platform
+# =============================================
+
+services:
+  # ================
+  # MongoDB Database
+  # ================
+  mongodb:
+    image: mongo:7
+    container_name: orixa-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-orixa}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-orixa_secret}
+      MONGO_INITDB_DATABASE: orixa
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    ports:
+      - "27017:27017"
+    networks:
+      - orixa-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ================
+  # API (NestJS)
+  # ================
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: orixa-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-orixa}:${MONGO_ROOT_PASSWORD:-orixa_secret}@mongodb:27017/orixa?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-min-32-characters-here}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-refresh-secret-min-32-characters}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - orixa-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ================
+  # Web (React/Vite)
+  # ================
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    container_name: orixa-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - orixa-network
+
+# ================
+# Volumes
+# ================
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+# ================
+# Networks
+# ================
+networks:
+  orixa-network:
+    driver: bridge
