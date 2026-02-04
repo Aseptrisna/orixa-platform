@@ -2,10 +2,56 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.png" />
+    <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ORIXA - Multi-tenant POS Platform</title>
+
+    <!-- Primary SEO -->
+    <title>ORIXA – Multi-tenant POS Platform</title>
+    <meta
+      name="description"
+      content="ORIXA adalah platform POS multi-tenant modern untuk UMKM, restoran, dan bisnis retail dengan manajemen transaksi, laporan, dan inventori terintegrasi."
+    />
+    <meta
+      name="keywords"
+      content="POS, Point of Sale, Multi-tenant POS, Aplikasi Kasir, ORIXA, POS UMKM, POS Retail"
+    />
+    <meta name="author" content="ORIXA Team" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="ORIXA – Multi-tenant POS Platform" />
+    <meta
+      property="og:description"
+      content="Platform POS multi-tenant untuk mengelola transaksi, inventori, dan laporan bisnis secara efisien."
+    />
+    <meta property="og:image" content="/logo.png" />
+    <meta property="og:url" content="https://orixa.app" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ORIXA – Multi-tenant POS Platform" />
+    <meta
+      name="twitter:description"
+      content="Platform POS modern untuk UMKM dan bisnis retail."
+    />
+    <meta name="twitter:image" content="/logo.png" />
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-T4J0NG6DMC"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-T4J0NG6DMC");
+    </script>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
