@@ -1,0 +1,35 @@
+{
+  "name": "orixa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ORIXA - Multi-tenant POS Platform for F&B, Retail, and Service businesses",
+  "scripts": {
+    "install:all": "pnpm install",
+    "dev": "pnpm run build:shared && pnpm -r --parallel run dev",
+    "dev:api": "pnpm --filter @orixa/api run start:dev",
+    "dev:web": "pnpm --filter @orixa/web run dev",
+    "build": "pnpm run build:shared && pnpm -r run build",
+    "build:shared": "pnpm --filter @orixa/shared run build",
+    "build:api": "pnpm --filter @orixa/api run build",
+    "build:web": "pnpm --filter @orixa/web run build",
+    "lint": "pnpm -r run lint",
+    "seed": "pnpm --filter @orixa/api run seed",
+    "clean": "pnpm -r exec rimraf dist node_modules && rimraf node_modules"
+  },
+  "keywords": [
+    "pos",
+    "fnb",
+    "retail",
+    "multi-tenant",
+    "nestjs",
+    "react",
+    "typescript"
+  ],
+  "author": "ORIXA Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

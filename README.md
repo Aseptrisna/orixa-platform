@@ -1,0 +1,447 @@
+# ORIXA - Multi-Tenant POS Platform
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/NestJS-10-E0234E?style=for-the-badge&logo=nestjs" alt="NestJS" />
+  <img src="https://img.shields.io/badge/MongoDB-7-47A248?style=for-the-badge&logo=mongodb" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss" alt="TailwindCSS" />
+</p>
+
+ORIXA adalah platform POS (Point of Sale) modern yang mendukung berbagai jenis bisnis: **F&B, Retail, dan Service**. Platform ini menyediakan fitur **QR Menu** untuk pelanggan, **POS** untuk kasir, dan **Kitchen Display System (KDS)** untuk dapur.
+
+## ✨ Highlights
+
+- 🏢 **Multi-Tenant** - Satu platform untuk banyak company/bisnis
+- 🏪 **Multi-Outlet** - Setiap company bisa punya banyak outlet
+- 📱 **QR Self-Order** - Pelanggan scan QR, pesan sendiri tanpa perlu login
+- 💳 **Flexible Payment** - Cash, Transfer Bank, QRIS (manual confirmation)
+- 🍳 **Kitchen Display** - Realtime order untuk dapur/barista
+- 📊 **Reports & Analytics** - Laporan harian, bulanan, perbandingan income vs expense
+- 💰 **Expense Tracking** - Catat pengeluaran per outlet
+- 📦 **Stock Management** - Tracking stok menu dengan auto-disable saat habis
+- 🔐 **RBAC** - Role-based access control dengan permissions
+
+## 🎯 Demo
+
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin | `superadmin@orixa.dev` | `Password123!` |
+| Company Admin | `admin@demo.co` | `Password123!` |
+| Cashier | `cashier@demo.co` | `Password123!` |
+| Member | `member@demo.co` | `Password123!` |
+
+**Demo URLs (setelah running lokal):**
+- Landing Page: http://localhost:5173
+- Admin Dashboard: http://localhost:5173/admin
+- POS Kasir: http://localhost:5173/pos
+- Kitchen Display: http://localhost:5173/kds
+- Customer QR Menu: http://localhost:5173/m/TABLE001
+- API Docs (Swagger): http://localhost:3000/api/docs
+
+## 🛠 Tech Stack
+
+### Frontend
+- **React 18** + Vite + TypeScript
+- **TailwindCSS** + shadcn/ui components
+- **React Query** untuk data fetching & caching
+- **Zustand** untuk state management
+- **React Router** untuk routing
+- **React Hook Form** + Zod untuk form validation
+- **Socket.IO** client untuk realtime updates
+- **Recharts** untuk charts & analytics
+
+### Backend
+- **NestJS** (TypeScript)
+- **MongoDB** + Mongoose ODM
+- **JWT Authentication** (access + refresh token dengan httpOnly cookie)
+- **RBAC** (Role-Based Access Control) dengan guards & decorators
+- **Socket.IO** untuk realtime events
+- **Swagger** OpenAPI documentation
+- **class-validator** + class-transformer untuk validation
+
+## 📁 Project Structure
+
+```
+ORIXA/
+├── apps/
+│   ├── api/                 # NestJS backend
+│   │   ├── src/
+│   │   │   ├── modules/     # Feature modules (auth, orders, payments, etc.)
+│   │   │   ├── schemas/     # MongoDB Mongoose schemas
+│   │   │   ├── common/      # Guards, decorators, filters
+│   │   │   └── gateway/     # Socket.IO gateway
+│   │   └── .env.example
+│   └── web/                 # React frontend
+│       ├── src/
+│       │   ├── pages/       # Page components
+│       │   ├── components/  # Reusable components
+│       │   ├── api/         # API client functions
+│       │   ├── store/       # Zustand stores
+│       │   └── hooks/       # Custom hooks
+│       └── .env.example
+├── packages/
+│   └── shared/              # Shared types, enums, schemas, constants
+├── docs/                    # Documentation
+├── pnpm-workspace.yaml
+├── package.json
+└── README.md
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- pnpm 8+
+- MongoDB (local atau Atlas)
+
+## Quick Start
+
+### 1. Clone & Install Dependencies
+
+```bash
+# Clone repository
+cd ORIXA
+
+# Install dependencies
+pnpm install
+```
+
+### 2. Setup MongoDB
+
+**Option A: MongoDB Local**
+```bash
+# Install MongoDB Community Edition
+# https://www.mongodb.com/docs/manual/installation/
+
+# Start MongoDB service
+mongod --dbpath /path/to/data/db
+```
+
+**Option B: MongoDB Atlas**
+1. Buat akun di https://cloud.mongodb.com
+2. Create cluster (Free tier available)
+3. Get connection string
+
+### 3. Environment Configuration
+
+**Backend (.env)**
+```bash
+# Copy example file
+cp apps/api/.env.example apps/api/.env
+
+# Edit dengan konfigurasi Anda
+```
+
+File `apps/api/.env`:
+```env
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/orixa
+JWT_SECRET=your-jwt-secret-min-32-chars-here
+JWT_REFRESH_SECRET=your-refresh-secret-min-32-chars
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+CORS_ORIGIN=http://localhost:5173
+```
+
+**Frontend (.env)**
+```bash
+# Copy example file
+cp apps/web/.env.example apps/web/.env
+```
+
+File `apps/web/.env`:
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+### 4. Build Shared Package
+
+```bash
+pnpm build:shared
+```
+
+### 5. Seed Database
+
+```bash
+pnpm seed
+```
+
+Ini akan membuat:
+- Super Admin: `superadmin@orixa.dev` / `Password123!`
+- Demo Company: "Demo Restaurant"
+- Demo Admin: `admin@demo.co` / `Password123!`
+- Demo Cashier: `cashier@demo.co` / `Password123!`
+- Demo Member: `member@demo.co` / `Password123!`
+- Sample categories, menu items, tables
+
+### 6. Run Development Servers
+
+```bash
+# Run both API and Web
+pnpm dev
+
+# Or run separately:
+pnpm dev:api    # Backend at http://localhost:3000
+pnpm dev:web    # Frontend at http://localhost:5173
+```
+
+### 7. Access Application
+
+- **Landing Page**: http://localhost:5173
+- **Admin Dashboard**: http://localhost:5173/admin
+- **POS**: http://localhost:5173/pos
+- **KDS**: http://localhost:5173/kds
+- **Super Admin**: http://localhost:5173/sa
+- **Customer QR Menu**: http://localhost:5173/m/TABLE001
+- **API Docs**: http://localhost:3000/api/docs
+
+## 👥 Roles & Permissions
+
+### Roles
+| Role | Description |
+|------|-------------|
+| **SUPER_ADMIN** | Platform owner, manages all companies |
+| **COMPANY_ADMIN** | Company admin, manages outlets, staff, menu, reports |
+| **CASHIER** | POS operations, order management, payment confirmation |
+| **CUSTOMER_MEMBER** | Registered customer with order history |
+| **CUSTOMER_GUEST** | Anonymous customer (no login required) |
+
+### Permissions
+| Permission | Description |
+|------------|-------------|
+| `company:read/write` | Manage company settings |
+| `outlet:read/write` | Manage outlets |
+| `menu:read/write` | Manage categories & menu items |
+| `order:read/write` | Manage orders |
+| `payment:read/write` | Manage payments |
+| `report:read` | View reports & analytics |
+| `user:read/write` | Manage staff users |
+| `table:read/write` | Manage tables & QR codes |
+| `expense:read/write` | Manage expenses |
+
+## 📱 Features
+
+### Customer Flow (QR Menu)
+```
+Scan QR → Pilih Menu → Checkout → Pilih Pembayaran → Track Order Realtime
+```
+- 📷 Scan QR code di meja
+- 📋 Lihat menu dengan gambar dan harga
+- 🛒 Tambah ke cart dengan varian dan addon
+- 💳 Checkout tanpa login (guest) atau login untuk riwayat
+- 📍 Track status order secara realtime
+
+### Cashier Flow (POS)
+```
+Input Order → Pilih Pembayaran → Konfirmasi → Cetak Struk
+```
+- ➕ Buat order manual dengan UI yang intuitif
+- 📱 Terima dan konfirmasi order dari QR
+- 💰 Proses pembayaran (Cash langsung PAID, Transfer/QRIS pending)
+- 🧾 Cetak struk (print view)
+- 🔄 Kelola shift (open/close cash register)
+
+### Kitchen Flow (KDS)
+```
+Order Masuk → Accept → In Progress → Ready
+```
+- 📺 Display realtime untuk dapur/barista
+- 🔔 Notifikasi order baru
+- ✅ Update status dengan satu klik
+- 🏷️ Filter berdasarkan station
+
+### Admin Features
+- 🏪 Kelola multiple outlets
+- 📋 Setup menu categories & items dengan stock tracking
+- 💳 Konfigurasi payment methods (Cash/Transfer/QRIS)
+- 🪑 Manage tables dan generate QR codes
+- 👥 Manage staff (Admin, Cashier)
+- 📊 Dashboard dengan analytics
+- 💰 Track pengeluaran (expenses)
+- 📈 Laporan income vs expense
+
+## 💳 Payment Configuration
+
+Payment methods dikonfigurasi per Outlet:
+
+```javascript
+{
+  settings: {
+    paymentConfig: {
+      enabledMethods: ["CASH", "TRANSFER", "QR"],
+      transferInstructions: {
+        bankName: "BCA",
+        accountName: "PT Demo Restaurant",
+        accountNumberOrVA: "1234567890",
+        note: "Transfer sesuai nominal"
+      },
+      qrInstructions: {
+        qrImageUrl: "https://example.com/qris.png",
+        note: "Scan QRIS untuk bayar"
+      }
+    }
+  }
+}
+```
+
+## 🔌 API Endpoints
+
+### Auth
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register-company` | Register company + admin |
+| POST | `/auth/login` | Login (staff/member) |
+| POST | `/auth/refresh` | Refresh access token |
+| POST | `/auth/logout` | Logout (clear refresh cookie) |
+
+### Public (Customer)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/public/resolve/:qrToken` | Resolve QR code to outlet/table |
+| GET | `/public/menu` | Get menu by outletId |
+| POST | `/public/orders` | Create guest order |
+| GET | `/public/orders/:id` | Get order detail |
+| GET | `/public/orders/track/:code` | Track order by code |
+
+### POS (Cashier)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/pos/orders` | Create POS order |
+| GET | `/pos/orders` | List outlet orders |
+| PATCH | `/pos/orders/:id/status` | Update order status |
+| PATCH | `/pos/payments/:id/confirm` | Confirm payment |
+
+### KDS (Kitchen)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/kds/orders` | Get active orders |
+| PATCH | `/kds/orders/:id/status` | Update order status |
+
+### Admin
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| CRUD | `/outlets` | Manage outlets |
+| CRUD | `/tables` | Manage tables |
+| CRUD | `/categories` | Manage categories |
+| CRUD | `/menu-items` | Manage menu items |
+| PATCH | `/menu-items/:id/stock` | Quick stock update |
+| CRUD | `/expenses` | Manage expenses |
+| GET | `/reports/daily` | Daily report |
+| GET | `/reports/range` | Date range report |
+| GET | `/reports/financial` | Income vs expense |
+
+📚 **Full API Documentation**: http://localhost:3000/api/docs (Swagger)
+
+## 🔄 Realtime Events (Socket.IO)
+
+### Rooms
+| Room | Description |
+|------|-------------|
+| `staff:{companyId}:{outletId}` | Staff room untuk updates |
+| `customer:{orderId}` | Customer order tracking |
+
+### Events
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `order.created` | Order object | Order baru dibuat |
+| `order.status.updated` | `{orderId, status}` | Status order berubah |
+| `payment.created` | Payment object | Payment baru dibuat |
+| `payment.updated` | `{paymentId, status}` | Status payment berubah |
+
+## 📜 Scripts
+
+```bash
+pnpm install      # Install all dependencies
+pnpm dev          # Run both API and Web in development
+pnpm dev:api      # Run only API
+pnpm dev:web      # Run only Web
+pnpm build        # Build all packages
+pnpm build:shared # Build shared package
+pnpm seed         # Seed database with demo data
+pnpm lint         # Run linter
+```
+
+## 🐛 Troubleshooting
+
+<details>
+<summary><b>MongoDB Connection Error</b></summary>
+
+```
+Error: connect ECONNREFUSED 127.0.0.1:27017
+```
+**Solution:**
+- Pastikan MongoDB service berjalan
+- Cek `MONGODB_URI` di `.env`
+- Untuk MongoDB Atlas, pastikan IP whitelist sudah benar
+</details>
+
+<details>
+<summary><b>CORS Error</b></summary>
+
+```
+Access to XMLHttpRequest blocked by CORS policy
+```
+**Solution:**
+- Pastikan `CORS_ORIGIN` di backend `.env` sesuai dengan URL frontend
+- Default: `http://localhost:5173`
+</details>
+
+<details>
+<summary><b>JWT Error</b></summary>
+
+```
+JsonWebTokenError: invalid signature
+```
+**Solution:**
+- Pastikan `JWT_SECRET` dan `JWT_REFRESH_SECRET` di `.env`
+- Minimum 32 characters
+</details>
+
+<details>
+<summary><b>Cannot find module '@orixa/shared'</b></summary>
+
+**Solution:**
+- Run `pnpm build:shared` terlebih dahulu
+- Pastikan workspace linking benar di `pnpm-workspace.yaml`
+</details>
+
+## 📸 Screenshots
+
+| Landing Page | Admin Dashboard | POS Kasir |
+|:---:|:---:|:---:|
+| Marketing website | Company management | Create orders |
+
+| Kitchen Display | QR Menu | Order Tracking |
+|:---:|:---:|:---:|
+| Realtime orders | Customer self-order | Track status |
+
+## 🗺️ Roadmap
+
+- [ ] Loyalty points system
+- [ ] Voucher & promo codes
+- [ ] Multi-language support (i18n)
+- [ ] Dark mode
+- [ ] Mobile app (React Native)
+- [ ] Third-party payment gateway integration
+- [ ] Inventory management
+- [ ] Supplier management
+- [ ] Employee scheduling
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  Made with ❤️ by Logic Frame
+</p>
