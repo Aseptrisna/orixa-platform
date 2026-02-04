@@ -17,20 +17,20 @@ async function seed() {
     throw new Error('Database connection failed');
   }
 
-  // Clear existing data
-  console.log('🗑️  Clearing existing data...');
-  await db.collection('users').deleteMany({});
-  await db.collection('companies').deleteMany({});
-  await db.collection('outlets').deleteMany({});
-  await db.collection('tables').deleteMany({});
-  await db.collection('categories').deleteMany({});
-  await db.collection('addons').deleteMany({});
-  await db.collection('menuitems').deleteMany({});
-  await db.collection('orders').deleteMany({});
-  await db.collection('payments').deleteMany({});
-  await db.collection('shifts').deleteMany({});
-  await db.collection('auditlogs').deleteMany({});
-  await db.collection('expenses').deleteMany({});
+  // Clear existing data and drop indexes
+  console.log('🗑️  Clearing existing data and indexes...');
+  
+  const collections = ['users', 'companies', 'outlets', 'tables', 'categories', 'addons', 'menuitems', 'orders', 'payments', 'shifts', 'auditlogs', 'expenses'];
+  
+  for (const collName of collections) {
+    try {
+      await db.collection(collName).drop();
+      console.log(`   Dropped collection: ${collName}`);
+    } catch (e: any) {
+      // Collection might not exist, ignore
+      if (e.code !== 26) console.log(`   Skip: ${collName} (${e.message})`);
+    }
+  }
 
   const passwordHash = await bcrypt.hash('Password123!', 10);
 
