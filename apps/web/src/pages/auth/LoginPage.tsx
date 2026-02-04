@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Spinner } from '@/components/ui/spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Role } from '@orixa/shared';
-import { Mail, Lock, AlertCircle, ArrowRight, Building2 } from 'lucide-react';
+import { Mail, Lock, AlertCircle, ArrowRight, Building2, Eye, EyeOff } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Email tidak valid'),
@@ -24,14 +24,30 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showResendActivation, setShowResendActivation] = useState(false);
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuthStore();
+  const { login, isAuthenticated, user } = useAuthStore();
 
   const from = (location.state as any)?.from?.pathname || '/admin';
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === Role.SUPER_ADMIN) {
+        navigate('/sa', { replace: true });
+      } else if (user.role === Role.COMPANY_ADMIN) {
+        navigate('/admin', { replace: true });
+      } else if (user.role === Role.CASHIER) {
+        navigate('/pos', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate, from]);
 
   const {
     register,
@@ -145,13 +161,22 @@ export default function LoginPage() {
                 <Lock className="h-4 w-4 text-slate-400" />
                 Password
               </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                className="h-11"
-                {...register('password')}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  className="h-11 pr-10"
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.password && (
                 <p className="text-sm text-red-500">{errors.password.message}</p>
               )}
@@ -182,16 +207,6 @@ export default function LoginPage() {
                 Daftar perusahaan
               </Link>
             </p>
-          </div>
-
-          <div className="mt-6 p-4 bg-slate-50 rounded-xl text-sm border">
-            <p className="font-semibold mb-2 text-slate-700">🔐 Akun Demo:</p>
-            <div className="space-y-1 text-slate-600">
-              <p>Super Admin: <code className="text-xs bg-slate-200 px-1 rounded">superadmin@orixa.dev</code></p>
-              <p>Admin: <code className="text-xs bg-slate-200 px-1 rounded">admin@demo.co</code></p>
-              <p>Kasir: <code className="text-xs bg-slate-200 px-1 rounded">cashier@demo.co</code></p>
-            </div>
-            <p className="mt-2 text-slate-500">Password: <code className="text-xs bg-slate-200 px-1 rounded">Password123!</code></p>
           </div>
         </CardContent>
       </Card>

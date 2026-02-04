@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { authApi } from '@/api';
+import { useAuthStore } from '@/store/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
-import { CheckCircle, Mail, Building2, User, Lock, ArrowLeft } from 'lucide-react';
+import { CheckCircle, Mail, Building2, User, Lock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Role } from '@orixa/shared';
 
 const registerSchema = z.object({
   companyName: z.string().min(2, 'Nama perusahaan minimal 2 karakter'),
@@ -28,8 +30,25 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuthStore();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === Role.SUPER_ADMIN) {
+        navigate('/sa', { replace: true });
+      } else if (user.role === Role.COMPANY_ADMIN) {
+        navigate('/admin', { replace: true });
+      } else if (user.role === Role.CASHIER) {
+        navigate('/pos', { replace: true });
+      } else {
+        navigate('/admin', { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const {
     register,
@@ -182,13 +201,22 @@ export default function RegisterPage() {
                 <Lock className="h-4 w-4 text-slate-400" />
                 Password
               </Label>
-              <Input
-                id="adminPassword"
-                type="password"
-                placeholder="••••••••"
-                className="h-11"
-                {...register('adminPassword')}
-              />
+              <div className="relative">
+                <Input
+                  id="adminPassword"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  className="h-11 pr-10"
+                  {...register('adminPassword')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.adminPassword && (
                 <p className="text-sm text-red-500">{errors.adminPassword.message}</p>
               )}
