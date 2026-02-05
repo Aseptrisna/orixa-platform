@@ -41,6 +41,7 @@ export class UsersService {
       outletIds: dto.outletIds?.map((id) => new Types.ObjectId(id)) || [],
       phone: dto.phone,
       isActive: true,
+      isEmailVerified:true
     });
 
     await this.auditService.log({
